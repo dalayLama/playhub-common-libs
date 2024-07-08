@@ -1,8 +1,9 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.1'
     id 'io.spring.dependency-management' version '1.1.5'
     id 'idea'
+    id 'maven-publish'
+    id 'java-library'
 }
 
 idea {
@@ -15,26 +16,51 @@ idea {
     }
 }
 
-group = 'com.playhub.gameroom'
+group = 'com.playhub'
 version = '0.0.1-SNAPSHOT'
 
 ext {
-    bomVersions = []
+    bomVersions = [
+            springBoot: "3.3.1"
+    ]
     libVersions = []
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:$bomVersions.springBoot"
+    }
+}
+
 dependencies {
+    api 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+        }
+    }
 }
 
 test {
