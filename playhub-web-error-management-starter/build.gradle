@@ -1,0 +1,9 @@
+group = 'com.playhub.common'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+
+    api project(':playhub-web-error-management')
+    api 'org.springframework:spring-webmvc'
+
+}

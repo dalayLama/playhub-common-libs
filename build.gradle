@@ -16,53 +16,74 @@ idea {
     }
 }
 
-group = 'com.playhub'
+group = 'com.playhub.common'
 version = '0.0.1-SNAPSHOT'
 
 ext {
     bomVersions = [
-            springBoot: "3.3.1"
+            springBoot: "3.2.5",
     ]
     libVersions = []
 }
 
-repositories {
-    mavenCentral()
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.boot:spring-boot-dependencies:$bomVersions.springBoot"
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
-dependencies {
-    api 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'idea'
+    apply plugin: 'maven-publish'
+    apply plugin: 'java-library'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencyManagement {
+        dependencies {
+            imports {
+                mavenBom "org.springframework.boot:spring-boot-dependencies:$bomVersions.springBoot"
+            }
+        }
+    }
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+
+        api 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'org.junit.platform:junit-platform-launcher'
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                versionMapping {
+                    usage('java-api') {
+                        fromResolutionOf('runtimeClasspath')
+                    }
+                    usage('java-runtime') {
+                        fromResolutionResult()
+                    }
                 }
             }
         }
     }
+
 }
 
-test {
+tasks.named('test') {
     useJUnitPlatform()
 }
