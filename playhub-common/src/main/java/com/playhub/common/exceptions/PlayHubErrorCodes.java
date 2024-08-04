@@ -11,4 +11,6 @@ public class PlayHubErrorCodes {
 
     public static final String VALIDATION_ERROR_CODE = "VALIDATION_ERROR";
 
+    public static final String ACCESS_DENIED_ERROR_CODE = "ACCESS_DENIED";
+
 }

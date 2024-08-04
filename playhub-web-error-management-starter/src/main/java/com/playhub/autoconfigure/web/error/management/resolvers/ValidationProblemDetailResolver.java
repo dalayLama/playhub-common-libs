@@ -1,11 +1,12 @@
-package com.playhub.common.web.error.managment;
+package com.playhub.autoconfigure.web.error.management.resolvers;
 
 import com.playhub.common.exceptions.PlayHubErrorCodes;
+import com.playhub.common.web.error.managment.AbstractProblemDetailResolver;
+import com.playhub.common.web.error.managment.TypeAwareProblemDetailResolver;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.method.MethodValidationException;
