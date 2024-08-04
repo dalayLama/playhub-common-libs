@@ -1,6 +1,7 @@
 package com.playhub.autoconfigure.logger;
 
 import com.playhub.autoconfigure.logger.component.DefaultLogFormatter;
+import com.playhub.autoconfigure.logger.component.LogFormatter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,6 +12,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Logging {
     boolean input() default false;
+    String inputTemplate() default "%s#%s is called:";
     boolean output() default false;
-    Class<?> formatter() default DefaultLogFormatter.class;
+    String outputTemplate() default "%s#%s returns:";
+    Class<? extends LogFormatter> formatter() default DefaultLogFormatter.class;
 }

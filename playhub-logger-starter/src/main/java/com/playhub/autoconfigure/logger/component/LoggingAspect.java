@@ -6,7 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.CodeSignature;
+import org.slf4j.event.Level;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ClassUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -16,50 +21,62 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class LoggingAspect {
 
-    private static final Class<?> DEFAULT_CLASS = Object.class;
-    private final Map<Class<?>, LogFormatter> logFormatters;
+    private final LogFormatterManager logFormatterManager;
+
+    @Value("${playhub.logging.level:INFO}")
+    private Level logLevel;
 
     @Around("@annotation(logging)")
     public Object aroundLogging(
         ProceedingJoinPoint joinPoint,
         Logging logging
     ) throws Throwable {
-        Class<?> formatter = logging.formatter();
-        LogFormatter logFormatter = logFormatters.get(formatter);
-        if (Objects.isNull(logFormatter)) {
-            log.warn("Not found log formatter for class [{}]", formatter.getSimpleName());
-            logFormatter = logFormatters.get(DEFAULT_CLASS);
-        }
+        Class<? extends LogFormatter> formatter = logging.formatter();
+        LogFormatter logFormatter = logFormatterManager.getLogFormatter(formatter);
+        Map<String, Object> params = getMethodParams(joinPoint);
 
-        boolean isDefault = Objects.equals(formatter, DEFAULT_CLASS);
-        LogFormatter defaultFormatter = isDefault ? logFormatters.get(DEFAULT_CLASS) : logFormatter;
         if (logging.input()) {
-            log(isDefault, formatter, logFormatter::formatInput, defaultFormatter::formatInput, joinPoint.getArgs());
+            String inputMessage = logging.inputTemplate().formatted(
+                ClassUtils.getUserClass(joinPoint.getThis().getClass()).getSimpleName(),
+                joinPoint.getSignature().getName()
+            );
+            log(logFormatter::formatInput, inputMessage, params);
         }
 
         Object result = joinPoint.proceed();
 
         if (logging.output()) {
-            log(isDefault, formatter, logFormatter::formatOutput, defaultFormatter::formatOutput, result);
+            String outputMessage = logging.outputTemplate().formatted(
+                ClassUtils.getUserClass(joinPoint.getThis().getClass()).getSimpleName(),
+                joinPoint.getSignature().getName()
+            );
+            log(logFormatter::formatOutput, outputMessage, result);
         }
 
         return result;
     }
 
     private <T> void log(
-        boolean isDefault,
-        Class<?> formatter,
         Function<T, String> function,
-        Function<T, String> defaultFunction,
+        String message,
         T arg
     ) {
         try {
-            log.debug(function.apply(arg));
+            log.atLevel(logLevel).log("{} {}", message, function.apply(arg));
         } catch (Exception e) {
-            log.warn("Failed to format [{}] by formatter for class [{}]", arg, formatter.getSimpleName());
-            if (!isDefault) {
-                log.debug(defaultFunction.apply(arg));
+            log.error("Failed to execute formatter on arg %s".formatted(arg), e);
+        }
+    }
+
+    private Map<String, Object> getMethodParams(ProceedingJoinPoint joinPoint) {
+        Map<String, Object> param = new HashMap<>();
+        Object[] paramValues = joinPoint.getArgs();
+        if (Objects.nonNull(paramValues) && paramValues.length > 0) {
+            String[] paramNames = ((CodeSignature)joinPoint.getSignature()).getParameterNames();
+            for (int i = 0; i < paramNames.length; i++) {
+                param.put(paramNames[i], paramValues[i]);
             }
         }
+        return param;
     }
 }

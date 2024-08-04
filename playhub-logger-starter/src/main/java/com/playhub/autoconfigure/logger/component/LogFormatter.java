@@ -1,14 +1,10 @@
 package com.playhub.autoconfigure.logger.component;
 
+import java.util.Map;
+
 public interface LogFormatter {
 
-    /**
-     * Need to check objects for nulls
-     *
-     * @param objects
-     * @return
-     */
-    String formatInput(Object... objects);
+    String formatInput(Map<String, Object> params);
 
     String formatOutput(Object object);
 }
