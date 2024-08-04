@@ -1,14 +1,16 @@
 package com.playhub.autoconfigure.web.error.management;
 
+import com.playhub.autoconfigure.web.error.management.resolvers.AccessDeniedProblemDetailResolver;
 import com.playhub.common.web.error.managment.DefaultProblemDetailResolver;
 import com.playhub.common.web.error.managment.ProblemDetailResolver;
 import com.playhub.common.web.error.managment.ProblemDetailResolverManager;
 import com.playhub.common.web.error.managment.TypeAwareProblemDetailResolver;
-import com.playhub.common.web.error.managment.ValidationProblemDetailResolver;
+import com.playhub.autoconfigure.web.error.management.resolvers.ValidationProblemDetailResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +23,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -63,6 +66,13 @@ public class WebErrorManagementAutoConfiguration {
     public TypeAwareProblemDetailResolver validationProblemDetailResolver(MessageSource messageSource) {
         log.info("Creating ValidationProblemDetailResolver");
         return new ValidationProblemDetailResolver(messageSource);
+    }
+
+    @Bean
+    @ConditionalOnClass(AccessDeniedException.class)
+    public TypeAwareProblemDetailResolver accessDeniedProblemDetailResolver(MessageSource messageSource) {
+        log.info("Creating AccessDeniedProblemDetailResolver");
+        return new AccessDeniedProblemDetailResolver(messageSource);
     }
 
 
