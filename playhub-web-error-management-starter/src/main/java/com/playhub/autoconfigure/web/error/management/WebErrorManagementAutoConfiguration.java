@@ -103,6 +103,7 @@ public class WebErrorManagementAutoConfiguration {
                                                                  HttpHeaders headers,
                                                                  HttpStatusCode statusCode,
                                                                  WebRequest request) {
+            log.error(ex.getMessage(), ex);
             if (body == null) {
                 body = problemDetailResolver.resolve(ex, statusCode, request);
             }
@@ -125,6 +126,13 @@ public class WebErrorManagementAutoConfiguration {
             return problemDetail;
         }
 
+        @Override
+        protected ResponseEntity<Object> createResponseEntity(Object body,
+                                                              HttpHeaders headers,
+                                                              HttpStatusCode statusCode,
+                                                              WebRequest request) {
+            return super.createResponseEntity(body, headers, statusCode, request);
+        }
     }
 
 }

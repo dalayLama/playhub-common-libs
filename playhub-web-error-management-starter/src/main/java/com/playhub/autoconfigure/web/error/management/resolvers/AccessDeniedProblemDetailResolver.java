@@ -7,6 +7,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -26,15 +27,11 @@ public class AccessDeniedProblemDetailResolver extends AbstractProblemDetailReso
 
     @Override
     public ProblemDetail resolve(Exception ex, HttpStatusCode statusCode, WebRequest request) {
-        ProblemDetail problemDetail = createProblemDetail(
-                ex,
-                statusCode,
-                ex.getMessage(),
-                "AccessDenied",
-                null,
-                PlayHubErrorCodes.ACCESS_DENIED_ERROR_CODE,
-                request.getLocale()
-        );
+        ProblemDetail problemDetail = ErrorResponse.builder(ex, statusCode, ex.getMessage())
+                .titleMessageCode("AccessDenied.title")
+                .detailMessageCode("AccessDenied.message")
+                .build()
+                .updateAndGetBody(getMessageSource(), request.getLocale());
         enrich(problemDetail, ex, request);
         return problemDetail;
     }
