@@ -6,6 +6,7 @@ import com.playhub.autoconfigure.security.rest.jwt.PlayHubJwtAuthenticationConve
 import com.playhub.autoconfigure.security.rest.jwt.PlayHubJwtGrantedAuthoritiesConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,31 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 public class PlayHubSecurityAutoConfiguration {
 
     @Bean
+    @ConditionalOnClass(name = "io.swagger.v3.oas.models.OpenAPI")
+    public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http) throws Exception {
+        log.info("Configuring open-api Security Filter Chain");
+        http.oauth2ResourceServer(customizer ->
+            customizer.jwt(jwtCustomizer ->
+                jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter())
+            ));
+        return http
+            .securityMatcher("/v3/api-docs/**", "/swagger-ui/**")
+            .authorizeHttpRequests(registry ->
+                registry.requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                    .anyRequest().authenticated())
+            .cors(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(ehc ->
+                ehc.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+            )
+            .build();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        log.info("Configuring Security Filter Chain");
+        log.info("Configuring root Security Filter Chain");
         http.oauth2ResourceServer(customizer ->
                 customizer.jwt(jwtCustomizer ->
                         jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter())
@@ -39,8 +63,6 @@ public class PlayHubSecurityAutoConfiguration {
                         ehc.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
                 .build();
-
-
     }
 
     @Bean
