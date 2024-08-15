@@ -1,7 +1,7 @@
-package com.playhub.common.web.error.managment;
+package com.playhub.common.errors.managment.web;
 
-import com.playhub.common.exceptions.PlayHubErrorCodes;
-import com.playhub.common.exceptions.PlayhubErrorCodeResolvable;
+import com.playhub.common.errors.managment.PlayHubErrorCodes;
+import com.playhub.common.errors.managment.PlayhubErrorCodeResolvable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;

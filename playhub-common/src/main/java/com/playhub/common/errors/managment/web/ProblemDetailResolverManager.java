@@ -1,4 +1,4 @@
-package com.playhub.common.web.error.managment;
+package com.playhub.common.errors.managment.web;
 
 import org.springframework.context.MessageSource;
 import org.springframework.core.ExceptionDepthComparator;

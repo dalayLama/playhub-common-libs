@@ -1,5 +1,6 @@
-package com.playhub.common.exceptions;
+package com.playhub.common.errors.exceptions;
 
+import com.playhub.common.errors.managment.PlayhubErrorCodeResolvable;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.ErrorResponse;
 

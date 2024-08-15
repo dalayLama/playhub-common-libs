@@ -1,11 +1,11 @@
 package com.playhub.autoconfigure.web.error.management;
 
-import com.playhub.autoconfigure.web.error.management.resolvers.AccessDeniedProblemDetailResolver;
-import com.playhub.common.web.error.managment.DefaultProblemDetailResolver;
-import com.playhub.common.web.error.managment.ProblemDetailResolver;
-import com.playhub.common.web.error.managment.ProblemDetailResolverManager;
-import com.playhub.common.web.error.managment.TypeAwareProblemDetailResolver;
-import com.playhub.autoconfigure.web.error.management.resolvers.ValidationProblemDetailResolver;
+import com.playhub.common.errors.managment.web.resolvers.AccessDeniedProblemDetailResolver;
+import com.playhub.common.errors.managment.web.DefaultProblemDetailResolver;
+import com.playhub.common.errors.managment.web.ProblemDetailResolver;
+import com.playhub.common.errors.managment.web.ProblemDetailResolverManager;
+import com.playhub.common.errors.managment.web.TypeAwareProblemDetailResolver;
+import com.playhub.common.errors.managment.web.resolvers.ValidationProblemDetailResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,7 +42,9 @@ import java.util.stream.Collectors;
 public class WebErrorManagementAutoConfiguration {
 
     @Bean
+    @ConditionalOnClass(BindException.class)
     public LocalValidatorFactoryBean validator(MessageSource messageSource) {
+        log.info("Creating LocalValidatorFactoryBean");
         LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
         bean.setValidationMessageSource(messageSource);
         return bean;
@@ -63,6 +66,7 @@ public class WebErrorManagementAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnClass(BindException.class)
     public TypeAwareProblemDetailResolver validationProblemDetailResolver(MessageSource messageSource) {
         log.info("Creating ValidationProblemDetailResolver");
         return new ValidationProblemDetailResolver(messageSource);
