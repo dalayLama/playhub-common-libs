@@ -1,4 +1,4 @@
-package com.playhub.common.exceptions;
+package com.playhub.common.errors.managment;
 
 import lombok.experimental.UtilityClass;
 

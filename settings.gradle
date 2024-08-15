@@ -1,6 +1,5 @@
 rootProject.name = 'playhub-common-libs'
 include 'playhub-common'
-include 'playhub-web-error-management'
 include 'playhub-logger-starter'
 include 'playhub-rest-security-starter'
 include 'playhub-web-error-management-starter'

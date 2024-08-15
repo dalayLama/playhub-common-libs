@@ -1,8 +1,8 @@
-package com.playhub.autoconfigure.web.error.management.resolvers;
+package com.playhub.common.errors.managment.web.resolvers;
 
-import com.playhub.common.exceptions.PlayHubErrorCodes;
-import com.playhub.common.web.error.managment.AbstractProblemDetailResolver;
-import com.playhub.common.web.error.managment.TypeAwareProblemDetailResolver;
+import com.playhub.common.errors.managment.PlayHubErrorCodes;
+import com.playhub.common.errors.managment.web.AbstractProblemDetailResolver;
+import com.playhub.common.errors.managment.web.TypeAwareProblemDetailResolver;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

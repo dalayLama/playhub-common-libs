@@ -3,8 +3,9 @@ version = '0.0.1-SNAPSHOT'
 
 dependencies {
 
-    api project(':playhub-web-error-management')
+    api project(':playhub-common')
     api 'org.springframework:spring-webmvc'
+    compileOnly 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly 'org.springframework.security:spring-security-core'
 
 }
