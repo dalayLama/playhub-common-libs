@@ -26,6 +26,7 @@ public class PlayHubSecurityAutoConfiguration {
     @Bean
     @ConditionalOnClass(name = "io.swagger.v3.oas.models.OpenAPI")
     public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http) throws Exception {
+        log.info("Configuring open-api Security Filter Chain");
         http.oauth2ResourceServer(customizer ->
             customizer.jwt(jwtCustomizer ->
                 jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter())
@@ -47,7 +48,7 @@ public class PlayHubSecurityAutoConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        log.info("Configuring Security Filter Chain");
+        log.info("Configuring root Security Filter Chain");
         http.oauth2ResourceServer(customizer ->
                 customizer.jwt(jwtCustomizer ->
                         jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter())
