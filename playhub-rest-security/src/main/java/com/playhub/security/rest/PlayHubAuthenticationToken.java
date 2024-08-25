@@ -1,4 +1,4 @@
-package com.playhub.autoconfigure.security.rest.secutiry;
+package com.playhub.security.rest;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;

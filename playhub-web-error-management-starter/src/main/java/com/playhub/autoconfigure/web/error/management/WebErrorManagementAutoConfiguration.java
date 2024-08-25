@@ -1,5 +1,6 @@
 package com.playhub.autoconfigure.web.error.management;
 
+import com.playhub.common.errors.exceptions.PlayhubFeignClientException;
 import com.playhub.common.errors.managment.web.resolvers.AccessDeniedProblemDetailResolver;
 import com.playhub.common.errors.managment.web.DefaultProblemDetailResolver;
 import com.playhub.common.errors.managment.web.ProblemDetailResolver;
@@ -20,6 +21,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -86,6 +88,14 @@ public class WebErrorManagementAutoConfiguration {
     public static class PlayhubExceptionHandlerController extends ResponseEntityExceptionHandler {
 
         private final ProblemDetailResolver problemDetailResolver;
+
+        @ExceptionHandler(PlayhubFeignClientException.class)
+        public ResponseEntity<byte[]> handleException(PlayhubFeignClientException ex) {
+            return ResponseEntity
+                    .status(ex.getStatusCode())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(ex.getBody());
+        }
 
         @ExceptionHandler(Exception.class)
         public ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest webRequest) {

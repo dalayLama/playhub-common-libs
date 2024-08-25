@@ -1,4 +1,4 @@
-package com.playhub.autoconfigure.security.rest.jwt;
+package com.playhub.security.rest.jwt;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;

@@ -1,4 +1,4 @@
-package com.playhub.autoconfigure.security.rest.consts;
+package com.playhub.security.rest.consts;
 
 import lombok.experimental.UtilityClass;
 

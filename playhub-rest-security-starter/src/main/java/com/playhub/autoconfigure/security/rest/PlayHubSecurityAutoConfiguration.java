@@ -1,9 +1,9 @@
 package com.playhub.autoconfigure.security.rest;
 
-import com.playhub.autoconfigure.security.rest.consts.KeycloakJwtClaimNames;
-import com.playhub.autoconfigure.security.rest.jwt.DefaultJwdDecoder;
-import com.playhub.autoconfigure.security.rest.jwt.PlayHubJwtAuthenticationConverter;
-import com.playhub.autoconfigure.security.rest.jwt.PlayHubJwtGrantedAuthoritiesConverter;
+import com.playhub.security.rest.consts.KeycloakJwtClaimNames;
+import com.playhub.security.rest.jwt.DefaultJwdDecoder;
+import com.playhub.security.rest.jwt.PlayHubJwtAuthenticationConverter;
+import com.playhub.security.rest.jwt.PlayHubJwtGrantedAuthoritiesConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,15 +27,9 @@ public class PlayHubSecurityAutoConfiguration {
     @ConditionalOnClass(name = "io.swagger.v3.oas.models.OpenAPI")
     public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http) throws Exception {
         log.info("Configuring open-api Security Filter Chain");
-        http.oauth2ResourceServer(customizer ->
-            customizer.jwt(jwtCustomizer ->
-                jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter())
-            ));
         return http
-            .securityMatcher("/v3/api-docs/**", "/swagger-ui/**")
-            .authorizeHttpRequests(registry ->
-                registry.requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                    .anyRequest().authenticated())
+            .securityMatcher("/v3/api-docs/**", "/swagger-ui/**", "swagger-ui.html")
+            .authorizeHttpRequests(registry -> registry.anyRequest().permitAll())
             .cors(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)

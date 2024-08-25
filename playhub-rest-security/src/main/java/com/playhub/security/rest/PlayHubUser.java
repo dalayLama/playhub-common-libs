@@ -1,4 +1,4 @@
-package com.playhub.autoconfigure.security.rest.secutiry;
+package com.playhub.security.rest;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.playhub.autoconfigure.security.rest.jwt;
+package com.playhub.security.rest.jwt;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;

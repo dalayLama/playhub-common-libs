@@ -3,4 +3,5 @@ include 'playhub-common'
 include 'playhub-logger-starter'
 include 'playhub-rest-security-starter'
 include 'playhub-web-error-management-starter'
+include 'playhub-rest-security'
 

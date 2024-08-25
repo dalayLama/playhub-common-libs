@@ -1,7 +1,7 @@
-package com.playhub.autoconfigure.security.rest.jwt;
+package com.playhub.security.rest.jwt;
 
-import com.playhub.autoconfigure.security.rest.secutiry.PlayHubAuthenticationToken;
-import com.playhub.autoconfigure.security.rest.secutiry.PlayHubUser;
+import com.playhub.security.rest.PlayHubAuthenticationToken;
+import com.playhub.security.rest.PlayHubUser;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;

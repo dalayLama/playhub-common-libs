@@ -22,6 +22,7 @@ version = '0.0.1-SNAPSHOT'
 ext {
     bomVersions = [
             springBoot: "3.2.5",
+            springCloud: "2022.0.3"
     ]
     libVersions = []
 }
@@ -54,6 +55,7 @@ subprojects {
         dependencies {
             imports {
                 mavenBom "org.springframework.boot:spring-boot-dependencies:$bomVersions.springBoot"
+                mavenBom "org.springframework.cloud:spring-cloud-dependencies:$bomVersions.springCloud"
             }
         }
     }
