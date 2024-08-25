@@ -69,9 +69,30 @@ subprojects {
     }
 
     publishing {
+        repositories {
+            maven {
+                name = "Common-Libs"
+                url = uri("https://maven.pkg.github.com/dalayLama/playhub-common-libs")
+                credentials {
+                    username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+                }
+            }
+        }
         publications {
             mavenJava(MavenPublication) {
                 from components.java
+                versionMapping {
+                    usage('java-api') {
+                        fromResolutionOf('runtimeClasspath')
+                    }
+                    usage('java-runtime') {
+                        fromResolutionResult()
+                    }
+                }
+            }
+            gpr(MavenPublication) {
+                from(components.java)
                 versionMapping {
                     usage('java-api') {
                         fromResolutionOf('runtimeClasspath')

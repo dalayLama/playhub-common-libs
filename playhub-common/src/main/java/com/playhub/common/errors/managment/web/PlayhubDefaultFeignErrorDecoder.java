@@ -2,9 +2,10 @@ package com.playhub.common.errors.managment.web;
 
 import com.playhub.common.errors.exceptions.PlayhubFeignClientException;
 import com.playhub.common.errors.exceptions.UnreadableRestClientException;
-import feign.FeignException;
 import feign.Response;
+import feign.RetryableException;
 import feign.codec.ErrorDecoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.ErrorResponse;
 
@@ -14,22 +15,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class PlayhubDefaultFeignErrorDecoder implements ErrorDecoder {
+
+    private final ErrorDecoder defaultDecoder = new Default();
 
     @Override
     public Exception decode(String methodKey, Response response) {
+        Exception ex = defaultDecoder.decode(methodKey, response);
+
+        if (ex instanceof RetryableException) {
+            return ex;
+        }
+
         Response.Body body = response.body();
         HttpStatus status = Optional.ofNullable(HttpStatus.resolve(response.status()))
                 .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 
         if (body == null || body.length() == null) {
-            return toUnreadableRestClientException(status, response);
+            return toUnreadableRestClientException(ex, status, response);
         }
 
         try {
             return toPlayhubFeignClientException(status, response);
         } catch (IOException e) {
-            return toUnreadableRestClientException(e, status, response);
+            log.warn(e.getMessage(), e);
+            return toUnreadableRestClientException(ex, status, response);
         }
     }
 
@@ -38,13 +49,6 @@ public class PlayhubDefaultFeignErrorDecoder implements ErrorDecoder {
             Response response) throws IOException {
         byte[] bytes = response.body().asInputStream().readAllBytes();
         return new PlayhubFeignClientException(status, bytes);
-    }
-
-    protected UnreadableRestClientException toUnreadableRestClientException(HttpStatus httpStatus, Response response) {
-        var feignClientException = new FeignException.FeignClientException(
-                httpStatus.value(), "Unreadable error", response.request(), new byte[0], response.headers()
-        );
-        return toUnreadableRestClientException(feignClientException, httpStatus, response);
     }
 
     protected UnreadableRestClientException toUnreadableRestClientException(Exception ex,
